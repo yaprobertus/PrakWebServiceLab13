@@ -14,7 +14,7 @@ Semua perintah dijalankan dari folder `toko` (tempat `docker-compose.yml` berada
 | Penerapan proyek kelompok | `proyek-kelompok/docker-compose.yml` + Dockerfile di `jadwal-service/`, `booking-service/`, `gateway/` |
 | Refleksi | `docs/refleksi-lab13.md` |
 
-Catatan API key: `API_KEY` sengaja tidak ditulis di compose. Gateway membacanya dari `gateway/.env` (atau environment variable `API_KEY`), dan `npm test` membaca dari sumber yang sama. Jika `gateway/.env` belum ada, jalankan `npm run start:all` sekali lalu hentikan (file dibuat otomatis), atau salin `gateway/.env.example` menjadi `gateway/.env`.
+Catatan API key: `API_KEY` sengaja tidak ditulis di compose. Gateway membacanya dari `gateway/.env`, dan `npm test` membaca dari berkas yang sama (di CI berkas dibuat oleh langkah "Siapkan API key"). Jika `gateway/.env` belum ada, jalankan `npm run start:all` sekali lalu hentikan (file dibuat otomatis), atau salin `gateway/.env.example` menjadi `gateway/.env`.
 
 ## Langkah 04: jalankan dan uji
 

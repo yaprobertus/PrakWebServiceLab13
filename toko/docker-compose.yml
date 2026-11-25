@@ -56,14 +56,12 @@ services:
     ports:
       - "8080:8080"
     # API key route /order-service (tantangan Lab 08) TIDAK ditulis di file ini agar tidak masuk repository.
-    # Nilainya diambil dari gateway/.env (lokal; berkas ini di-gitignore dan di-dockerignore)
-    # atau dari environment variable API_KEY milik shell/CI (nilai itu yang dipakai bila ada).
-    # Nilai di blok "environment" mengalahkan nilai di env_file.
+    # Nilainya dibaca dari gateway/.env (berkas lokal; di-gitignore dan di-dockerignore).
+    # Di CI berkas itu dibuat oleh langkah "Siapkan API key" pada ci.yml.
     env_file:
       - path: ./gateway/.env
         required: false
     environment:
-      API_KEY:
       PRODUCT_SERVICE_URL: http://product-service:3000
       ORDER_SERVICE_URL: http://order-service:3001
       PRODUCT_DOC_URL: http://product-service:3000/openapi.json

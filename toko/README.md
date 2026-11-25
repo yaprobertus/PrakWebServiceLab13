@@ -91,7 +91,7 @@ docker compose down              # mematikan stack (data di memori hilang)
 - Alamat penting: gateway **http://localhost:8080** (dokumentasi gabungan di **/docs**) dan dashboard RabbitMQ **http://localhost:15672** (guest/guest). Hanya dua port ini yang dibuka ke host; port 3000/3001 hanya ada di jaringan Compose.
 - Alamat antar service memakai nama service (`http://product-service:3000`, `http://order-service:3001`, `amqp://rabbitmq`) lewat environment variable `PRODUCT_SERVICE_URL`, `ORDER_SERVICE_URL`, `AMQP_URL`. Nilai bawaan `localhost` di kode tetap ada, jadi `npm run start:all` masih berfungsi.
 - `depends_on` dengan `condition: service_healthy` mengatur urutan start berdasarkan kesiapan (`/health`), bukan sekadar "sudah menyala".
-- `API_KEY` tidak ditulis di compose: gateway membacanya dari `gateway/.env` atau environment variable `API_KEY` (di CI diisi `ci-test-key`).
+- `API_KEY` tidak ditulis di compose: gateway membacanya dari `gateway/.env` (salin dari `.env.example` sebelum `docker compose up`); `npm test` membaca berkas yang sama. Di CI berkas itu dibuat oleh langkah "Siapkan API key".
 - Perubahan kode butuh build ulang: `docker compose up -d --build order-service`.
 - Latihan kegagalan, CI berbasis Compose, dan daftar screenshot: `PANDUAN-LAB13.md`. Refleksi: `docs/refleksi-lab13.md`.
 
