@@ -1,0 +1,63 @@
+name: CI
+
+on: [push, pull_request]
+
+# Lab 13: CI membangun image dan menjalankan stack Docker Compose yang SAMA dengan yang dipakai di laptop,
+# lalu menjalankan test Lab 12 terhadap gateway :8080. Repository ini berisi dua sistem
+# (toko/ dan proyek-kelompok/); masing-masing punya docker-compose.yml sendiri dan job sendiri (paralel).
+jobs:
+  toko:
+    name: "toko (Compose: gateway, product-service, order-service, notification-service, rabbitmq)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: toko
+    env:
+      API_KEY: ci-test-key          # bukan rahasia: hanya untuk gateway dan test di mesin CI sementara
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build dan nyalakan stack
+        run: docker compose up -d --build --wait
+
+      - name: Run tests
+        run: npm test
+
+      - name: Tampilkan log
+        if: always()
+        run: docker compose logs
+
+      - name: Matikan stack
+        if: always()
+        run: docker compose down -v
+
+  proyek-kelompok:
+    name: "proyek-kelompok (Compose: gateway, jadwal-service, booking-service)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: proyek-kelompok
+    env:
+      API_KEY: ci-test-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build dan nyalakan stack
+        run: docker compose up -d --build --wait
+
+      - name: Run tests
+        run: npm test
+
+      - name: Tampilkan log
+        if: always()
+        run: docker compose logs
+
+      - name: Matikan stack
+        if: always()
+        run: docker compose down -v

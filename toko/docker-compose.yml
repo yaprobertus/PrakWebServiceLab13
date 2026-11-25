@@ -1,0 +1,81 @@
+# Lab 13: seluruh sistem toko dalam satu perintah:  docker compose up --build
+# Hanya gateway (:8080) dan dashboard RabbitMQ (:15672) yang dibuka ke host.
+# Antar service saling menemukan lewat NAMA service di jaringan Compose (DNS internal Docker).
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  product-service:
+    build: ./product-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  order-service:
+    build: ./order-service
+    restart: unless-stopped
+    environment:
+      PRODUCT_SERVICE_URL: http://product-service:3000
+      AMQP_URL: amqp://rabbitmq
+    depends_on:
+      product-service:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  notification-service:
+    build: ./notification-service
+    restart: unless-stopped
+    environment:
+      AMQP_URL: amqp://rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  gateway:
+    build: ./gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    # API key route /order-service (tantangan Lab 08) TIDAK ditulis di file ini agar tidak masuk repository.
+    # Nilainya diambil dari gateway/.env (lokal; berkas ini di-gitignore dan di-dockerignore)
+    # atau dari environment variable API_KEY milik shell/CI (nilai itu yang dipakai bila ada).
+    # Nilai di blok "environment" mengalahkan nilai di env_file.
+    env_file:
+      - path: ./gateway/.env
+        required: false
+    environment:
+      API_KEY:
+      PRODUCT_SERVICE_URL: http://product-service:3000
+      ORDER_SERVICE_URL: http://order-service:3001
+      PRODUCT_DOC_URL: http://product-service:3000/openapi.json
+      ORDER_DOC_URL: http://order-service:3001/openapi.json
+    depends_on:
+      product-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s

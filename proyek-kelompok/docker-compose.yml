@@ -1,0 +1,58 @@
+# Lab 13 (penerapan ke proyek kelompok): sistem reservasi tiket kereta dalam satu perintah:
+#   docker compose up --build
+# Hanya gateway (:8080) yang dibuka ke host. jadwal-service dan booking-service hanya bisa
+# dijangkau lewat gateway; antar service saling menemukan lewat NAMA service.
+services:
+  jadwal-service:
+    build: ./jadwal-service
+    restart: unless-stopped
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-token}   # harus sama dengan booking-service
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  booking-service:
+    build: ./booking-service
+    restart: unless-stopped
+    environment:
+      JADWAL_URL: http://jadwal-service:3000
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-token}
+    depends_on:
+      jadwal-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  gateway:
+    build: ./gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    # API key route /booking tidak ditulis di sini agar tidak masuk repository: diambil dari gateway/.env
+    # (lokal, di-gitignore) atau dari environment variable API_KEY milik shell/CI bila ada.
+    env_file:
+      - path: ./gateway/.env
+        required: false
+    environment:
+      API_KEY:
+      SERVICE_A_URL: http://jadwal-service:3000
+      SERVICE_B_URL: http://booking-service:3001
+    depends_on:
+      jadwal-service:
+        condition: service_healthy
+      booking-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
