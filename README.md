@@ -101,7 +101,7 @@ docker compose down              # matikan dan hapus container (data di memori i
 
 Port 3000 dan 3001 sengaja **tidak** dibuka ke host. Antar service saling menemukan lewat nama di jaringan Compose (`http://product-service:3000`, `http://order-service:3001`, `amqp://rabbitmq`).
 
-**API key.** Nilai `API_KEY` tidak ditulis di `docker-compose.yml`. Gateway membacanya dari `toko/gateway/.env` (dibuat dari `.env.example`, atau otomatis oleh `npm run start:all`) atau dari environment variable `API_KEY` di shell. `npm test` membaca key dari sumber yang sama, sehingga keduanya cocok. Setelah mengubah kode, bangun ulang dengan `docker compose up -d --build <nama-service>` karena container berisi salinan kode saat build.
+**API key.** Nilai `API_KEY` tidak ditulis di `docker-compose.yml`. Gateway membacanya dari `toko/gateway/.env` (salin dari `.env.example`, atau dibuat otomatis oleh `npm run start:all`; di CI dibuat oleh langkah "Siapkan API key"). `npm test` membaca key dari berkas yang sama, sehingga keduanya cocok. Jangan mengisi `API_KEY` di shell saat memakai Compose. Setelah mengubah kode, bangun ulang dengan `docker compose up -d --build <nama-service>` karena container berisi salinan kode saat build.
 
 Untuk proyek kelompok (`proyek-kelompok/`): `cd proyek-kelompok && docker compose up --build`, lalu `npm test` (gateway di :8080).
 Langkah, latihan kegagalan, dan daftar screenshot ada di `toko/PANDUAN-LAB13.md`. Refleksi: `toko/docs/refleksi-lab13.md`.

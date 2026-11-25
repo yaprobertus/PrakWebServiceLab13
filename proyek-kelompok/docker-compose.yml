@@ -36,13 +36,12 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
-    # API key route /booking tidak ditulis di sini agar tidak masuk repository: diambil dari gateway/.env
-    # (lokal, di-gitignore) atau dari environment variable API_KEY milik shell/CI bila ada.
+    # API key route /booking tidak ditulis di sini agar tidak masuk repository: dibaca dari gateway/.env
+    # (berkas lokal, di-gitignore). Di CI berkas itu dibuat oleh langkah "Siapkan API key" pada ci.yml.
     env_file:
       - path: ./gateway/.env
         required: false
     environment:
-      API_KEY:
       SERVICE_A_URL: http://jadwal-service:3000
       SERVICE_B_URL: http://booking-service:3001
     depends_on:

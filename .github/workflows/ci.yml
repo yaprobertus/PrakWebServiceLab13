@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Siapkan API key
+        run: echo "API_KEY=$API_KEY" > gateway/.env     # dibaca gateway lewat env_file; tidak di-commit
+
       - name: Build dan nyalakan stack
         run: docker compose up -d --build --wait
 
@@ -47,6 +50,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Siapkan API key
+        run: echo "API_KEY=$API_KEY" > gateway/.env     # dibaca gateway lewat env_file; tidak di-commit
 
       - name: Build dan nyalakan stack
         run: docker compose up -d --build --wait

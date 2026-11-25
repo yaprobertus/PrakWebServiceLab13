@@ -117,7 +117,7 @@ docker compose ps                # semua service harus "healthy"
 docker compose down              # matikan (data in-memory hilang)
 ```
 
-Hanya gateway (**http://localhost:8080**) yang dibuka ke host. `jadwal-service` (:3000) dan `booking-service` (:3001) hanya ada di jaringan Compose dan saling menemukan lewat nama (`http://jadwal-service:3000`). Urutan start diatur `depends_on` dengan `service_healthy`. `API_KEY` dibaca dari `gateway/.env` (salin dari `.env.example`) atau environment variable `API_KEY`; `INTERNAL_TOKEN` bernilai bawaan `dev-internal-token` bila tidak diisi (ganti di lingkungan sungguhan).
+Hanya gateway (**http://localhost:8080**) yang dibuka ke host. `jadwal-service` (:3000) dan `booking-service` (:3001) hanya ada di jaringan Compose dan saling menemukan lewat nama (`http://jadwal-service:3000`). Urutan start diatur `depends_on` dengan `service_healthy`. `API_KEY` dibaca dari `gateway/.env` (salin dari `.env.example` sebelum `docker compose up`); `INTERNAL_TOKEN` bernilai bawaan `dev-internal-token` bila tidak diisi (ganti di lingkungan sungguhan).
 
 ## Catatan desain
 
